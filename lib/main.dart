@@ -5,7 +5,8 @@ import 'package:provider/provider.dart';
 import 'providers/expense_provider.dart';
 import 'providers/time_entry_provider.dart';
 
-import 'screens/home_screen.dart';
+// import 'screens/home_screen.dart';
+import 'screens/home_screen_.dart';
 import 'screens/category_management_screen.dart';
 import 'screens/tag_management_screen.dart';
 import 'screens/task_management_screen.dart';
@@ -36,10 +37,10 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => HomeScreen(), // Main entry point, HomeScreen
-          '/manage_categories': (context) =>
+          '/manage_projects': (context) =>
               ProjectManagementScreen(), // Route for managing categories
             //   CategoryManagementScreen(), // Route for managing categories
-          '/manage_tags': (context) =>
+          '/manage_tasks': (context) =>
               TaskManagementScreen(), // Route for managing tags
             //   TagManagementScreen(), // Route for managing tags
         },

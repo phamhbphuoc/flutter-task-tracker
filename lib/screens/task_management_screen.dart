@@ -15,16 +15,16 @@ class TaskManagementScreen extends StatelessWidget {
         builder: (context, provider, child) {
           // Lists for managing tasks would be implemented here
           return ListView.builder(
-            itemCount: provider.entries.length,
+            itemCount: provider.tasks.length,
             itemBuilder: (context, index) {
-              final entry = provider.entries[index];
+              final task = provider.tasks[index];
               return ListTile(
-                title: Text(entry.name),
+                title: Text(task.name),
                 trailing: IconButton(
                   icon: Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
-                    // Delete the entry
-                    provider.deleteEntry(entry.id);
+                    // Delete the task
+                    provider.deleteTask(task.id);
                   },
                 ),
               );
@@ -35,7 +35,15 @@ class TaskManagementScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Add new task
-          Center(child: Text('No data yet'));
+          showDialog(
+            context: context,
+            builder: (context) => AddTaskDialog(
+              onAdd: (newTask) {
+                Provider.of<TimeEntryProvider>(context, listen: false).addTask(newTask);
+                Navigator.pop(context); // Close the dialog after adding the new task
+              },
+            ),
+          );
         },
         child: Icon(Icons.add),
         tooltip: 'Add Task',

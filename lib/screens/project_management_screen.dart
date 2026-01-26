@@ -14,7 +14,21 @@ class ProjectManagementScreen extends StatelessWidget {
       body: Consumer<TimeEntryProvider>(
         builder: (context, provider, child) {
           // Lists for managing projects would be implemented here
-          Center(child: Text('No data yet'));
+          return ListView.builder(
+            itemCount: provider.projects.length,
+            itemBuilder: (context, index) {
+              final project = provider.projects[index];
+              return ListTile(
+                title: Text(project.name),
+                trailing: IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    provider.deleteProject(project.id);
+                  },
+                ),
+              );
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
