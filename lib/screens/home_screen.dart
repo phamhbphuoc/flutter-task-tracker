@@ -136,8 +136,8 @@ class _HomeScreenState extends State<HomeScreen>
                 color: Colors.purple[50],
                 margin: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                 child: ListTile(
-                    title: Text('${entry.projectId} - ${entry.totalTime} hours'),
-                    subtitle: Text('${entry.date.toString()} - Notes: ${entry.notes}'),
+                    title: Text('${getProjectNameById(context, entry.projectId)} - ${getTaskNameById(context, entry.taskId)}'),
+                    subtitle: Text('Total Time: ${entry.totalTime.toStringAsFixed(2)} hours \n${DateFormat('MMM dd, yyyy').format(entry.date)} \nNotes: ${entry.notes}'),
                     onTap: () {
                     // This could open a detailed view or edit screen
                     },
@@ -165,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen>
         return ListView(
           children: grouped.entries.map((entry) {
             String projectName = getProjectNameById(
-                context, entry.key); // Ensure you implement this function
+                context, entry.key);
             double total = entry.value.fold(
                 0.0, (double prev, TimeEntry element) => prev + element.totalTime);
             return Column(
@@ -174,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen>
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    "$projectName - Total: \$${total.toStringAsFixed(2)}",
+                    "$projectName",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -191,12 +191,11 @@ class _HomeScreenState extends State<HomeScreen>
                   itemBuilder: (context, index) {
                     TimeEntry timeEntry = entry.value[index];
                     return ListTile(
-                      leading:
-                          Icon(Icons.monetization_on, color: Colors.deepPurple),
+                    //   leading:
+                    //       Icon(Icons.monetization_on, color: Colors.deepPurple),
                       title: Text(
-                          "${timeEntry.notes} - \$${timeEntry.totalTime.toStringAsFixed(2)}"),
-                      subtitle: Text(DateFormat('MMM dd, yyyy')
-                          .format(timeEntry.date)),
+                          "- ${getTaskNameById(context, timeEntry.taskId)} - ${timeEntry.totalTime.toStringAsFixed(2)} hours (${
+                            Text(DateFormat('MMM dd, yyyy').format(timeEntry.date))})"),
                     );
                   },
                 ),
@@ -213,5 +212,12 @@ class _HomeScreenState extends State<HomeScreen>
         .projects
         .firstWhere((prj) => prj.id == projectId);
     return project.name;
+  }
+
+  String getTaskNameById(BuildContext context, String taskId) {
+    var task = Provider.of<TimeEntryProvider>(context, listen: false)
+        .tasks
+        .firstWhere((task) => task.id == taskId);
+    return task.name;
   }
 }
