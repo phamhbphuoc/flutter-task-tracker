@@ -33,8 +33,16 @@ class ProjectManagementScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add new project
-          Center(child: Text('No data yet'));
+          // Add new task
+          showDialog(
+            context: context,
+            builder: (context) => AddProjectDialog(
+              onAdd: (newProject) {
+                Provider.of<TimeEntryProvider>(context, listen: false).addProject(newProject);
+                Navigator.pop(context); // Close the dialog after adding the new project
+              },
+            ),
+          );
         },
         child: Icon(Icons.add),
         tooltip: 'Add Project',

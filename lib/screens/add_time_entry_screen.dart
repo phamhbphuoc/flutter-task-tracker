@@ -18,6 +18,9 @@ class _AddTimeEntryScreenState extends State<AddTimeEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final entryProvider = Provider.of<TimeEntryProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Time Entry'),
@@ -29,18 +32,18 @@ class _AddTimeEntryScreenState extends State<AddTimeEntryScreen> {
             DropdownButtonFormField<String>(
                 value: projectId,
                 onChanged: (String? newValue) {
-                setState(() {
-                    projectId = newValue!;
-                });
+                    setState(() {
+                        projectId = newValue!;
+                    });
                 },
                 decoration: InputDecoration(labelText: 'Project'),
-                items: <String>['Project 1', 'Project 2', 'Project 3'] // Dummy project names
-                    .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                );
-                }).toList(),
+                items: entryProvider.projects
+                    .map<DropdownMenuItem<String>>((project) {
+                        return DropdownMenuItem<String>(
+                            value: project.id,
+                            child: Text(project.name),
+                        );
+                    }).toList(),
             ),
             DropdownButtonFormField<String>(
                 value: taskId,
@@ -50,12 +53,12 @@ class _AddTimeEntryScreenState extends State<AddTimeEntryScreen> {
                 });
                 },
                 decoration: InputDecoration(labelText: 'Task'),
-                items: <String>['Task 1', 'Task 2', 'Task 3'] // Dummy task names
-                    .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                );
+                items: entryProvider.tasks
+                    .map<DropdownMenuItem<String>>((task) {
+                        return DropdownMenuItem<String>(
+                            value: task.id,
+                            child: Text(task.name),
+                        );
                 }).toList(),
             ),
             TextFormField(
@@ -88,12 +91,12 @@ class _AddTimeEntryScreenState extends State<AddTimeEntryScreen> {
                     _formKey.currentState!.save();
                     Provider.of<TimeEntryProvider>(context, listen: false)
                         .addTimeEntry(TimeEntry(
-                        id: DateTime.now().toString(), // Simple ID generation
-                        projectId: projectId,
-                        taskId: taskId,
-                        totalTime: totalTime,
-                        date: date,
-                        notes: notes,
+                            id: DateTime.now().toString(), // Simple ID generation
+                            projectId: projectId,
+                            taskId: taskId,
+                            totalTime: totalTime,
+                            date: date,
+                            notes: notes,
                         ));
                     Navigator.pop(context);
                 }
