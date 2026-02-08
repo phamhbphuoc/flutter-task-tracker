@@ -16,6 +16,8 @@ class _AddTimeEntryScreenState extends State<AddTimeEntryScreen> {
   DateTime date = DateTime.now();
   String notes = '';
 
+  final TextEditingController _dateController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
 
@@ -60,6 +62,34 @@ class _AddTimeEntryScreenState extends State<AddTimeEntryScreen> {
                             child: Text(task.name),
                         );
                 }).toList(),
+            ),
+            TextFormField(
+                controller: _dateController,
+                readOnly: true, // Prevents keyboard from appearing
+                decoration: InputDecoration(
+                    labelText: 'Date',
+                    hintText: 'Select a date',
+                    prefixIcon: const Icon(Icons.calendar_today),
+                    border: const OutlineInputBorder(),
+                ),
+                onTap: () async {
+                    // Trigger the built-in Material Date Picker
+                    DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: date,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                    );
+
+                    if (pickedDate != null) {
+                    // Update the text field with the selected date
+                    // Format: YYYY-MM-DD
+                    setState(() {
+                        _dateController.text = "${pickedDate.toLocal()}".split(' ')[0];
+                        date = pickedDate;
+                    });
+                    }
+                },
             ),
             TextFormField(
                 decoration: InputDecoration(labelText: 'Total Time (hours)'),
