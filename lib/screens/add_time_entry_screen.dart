@@ -10,8 +10,8 @@ class AddTimeEntryScreen extends StatefulWidget {
 
 class _AddTimeEntryScreenState extends State<AddTimeEntryScreen> {
   final _formKey = GlobalKey<FormState>();
-  String projectId = '';
-  String taskId = '';
+    String? projectId;
+    String? taskId;
   double totalTime = 0.0;
   DateTime date = DateTime.now();
   String notes = '';
@@ -33,9 +33,11 @@ class _AddTimeEntryScreenState extends State<AddTimeEntryScreen> {
             children: <Widget>[
             DropdownButtonFormField<String>(
                 value: projectId,
+                hint: const Text('Select a project'),
+                validator: (value) => value == null ? 'Please select a project' : null,
                 onChanged: (String? newValue) {
                     setState(() {
-                        projectId = newValue!;
+                        projectId = newValue;
                     });
                 },
                 decoration: InputDecoration(labelText: 'Project'),
@@ -49,9 +51,11 @@ class _AddTimeEntryScreenState extends State<AddTimeEntryScreen> {
             ),
             DropdownButtonFormField<String>(
                 value: taskId,
+                hint: const Text('Select a task'),
+                validator: (value) => value == null ? 'Please select a task' : null,
                 onChanged: (String? newValue) {
                 setState(() {
-                    taskId = newValue!;
+                    taskId = newValue;
                 });
                 },
                 decoration: InputDecoration(labelText: 'Task'),
@@ -122,8 +126,8 @@ class _AddTimeEntryScreenState extends State<AddTimeEntryScreen> {
                     Provider.of<TimeEntryProvider>(context, listen: false)
                         .addTimeEntry(TimeEntry(
                             id: DateTime.now().toString(), // Simple ID generation
-                            projectId: projectId,
-                            taskId: taskId,
+                            projectId: projectId!,
+                            taskId: taskId!,
                             totalTime: totalTime,
                             date: date,
                             notes: notes,

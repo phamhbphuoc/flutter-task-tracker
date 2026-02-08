@@ -20,14 +20,51 @@ class TimeEntryProvider with ChangeNotifier {
   List<Project> get projects => _projects;
   List<Task> get tasks => _tasks;
   TimeEntryProvider(this.storage) {
-    _loadExpensesFromStorage();
+    _initStorage();
   }
-  void _loadExpensesFromStorage() async {
-    // await storage.ready;
-    var storedEntries = storage.getItem('entries');
+
+  void _initStorage() {
+    _loadExpensesFromStorage();
+    _loadProjectsFromStorage();
+    _loadTasksFromStorage();
+    
+    // Initialize empty lists if they don't exist
+    if (storage.getItem('timeEntries') == null) {
+      storage.setItem('timeEntries', jsonEncode([]));
+    }
+    if (storage.getItem('projects') == null) {
+      storage.setItem('projects', jsonEncode([]));
+    }
+    if (storage.getItem('tasks') == null) {
+      storage.setItem('tasks', jsonEncode([]));
+    }
+  }
+
+  void _loadExpensesFromStorage() {
+    var storedEntries = storage.getItem('timeEntries');
     if (storedEntries != null) {
       _entries = List<TimeEntry>.from(
-        (storedEntries as List).map((item) => TimeEntry.fromJson(item)),
+        (storedEntries as List).map((item) => TimeEntry.fromJson(item as Map<String, dynamic>)),
+      );
+      notifyListeners();
+    }
+  }
+
+  void _loadProjectsFromStorage() {
+    var storedProjects = storage.getItem('projects');
+    if (storedProjects != null) {
+      _projects = List<Project>.from(
+        (storedProjects as List).map((item) => Project.fromJson(item as Map<String, dynamic>)),
+      );
+      notifyListeners();
+    }
+  }
+
+  void _loadTasksFromStorage() {
+    var storedTasks = storage.getItem('tasks');
+    if (storedTasks != null) {
+      _tasks = List<Task>.from(
+        (storedTasks as List).map((item) => Task.fromJson(item as Map<String, dynamic>)),
       );
       notifyListeners();
     }
@@ -37,6 +74,7 @@ class TimeEntryProvider with ChangeNotifier {
 
   void addTimeEntry(TimeEntry entry) {
     _entries.add(entry);
+    _saveEntriesToStorage();
     notifyListeners();
   }
 
@@ -44,6 +82,7 @@ class TimeEntryProvider with ChangeNotifier {
   void addProject(Project project) {
     if (!_projects.any((prj) => prj.name == project.name)) {
       _projects.add(project);
+      _saveProjectsToStorage();
       notifyListeners();
     }
   }
@@ -51,6 +90,7 @@ class TimeEntryProvider with ChangeNotifier {
   // Delete a project
   void deleteProject(String id) {
     _projects.removeWhere((project) => project.id == id);
+    _saveProjectsToStorage();
     notifyListeners();
   }
 
@@ -58,6 +98,7 @@ class TimeEntryProvider with ChangeNotifier {
   void addTask(Task task) {
     if (!_tasks.any((t) => t.name == task.name)) {
       _tasks.add(task);
+      _saveTasksToStorage();
       notifyListeners();
     }
   }
@@ -65,11 +106,29 @@ class TimeEntryProvider with ChangeNotifier {
   // Delete a task
   void deleteTask(String id) {
     _tasks.removeWhere((task) => task.id == id);
+    _saveTasksToStorage();
     notifyListeners();
   }
 
   void deleteTimeEntry(String id) {
     _entries.removeWhere((entry) => entry.id == id);
+    _saveEntriesToStorage();
     notifyListeners();
   }
-}
+
+  void _saveEntriesToStorage() {
+    storage.setItem('timeEntries', 
+      jsonEncode(_entries.map((entry) => entry.toJson()).toList())
+    );
+  }
+  void _saveProjectsToStorage() {
+    storage.setItem('projects',
+      jsonEncode(_projects.map((project) => project.toJson()).toList())
+    );
+  }
+
+  void _saveTasksToStorage() {
+    storage.setItem('tasks',
+      jsonEncode(_tasks.map((task) => task.toJson()).toList())
+    );
+  }}
